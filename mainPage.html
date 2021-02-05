@@ -1,0 +1,62 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>Canvas with Chatting</title>
+    <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        $(document).ready(function () {
+            
+            $.getJSON('/room', function (data) {
+                
+                $.each(data, function (index, item) {
+                    
+                    $('<button></button>').attr({
+                        'data-room': item
+                    }).text('Room Number: ' + item).button().appendTo('#container');
+                });
+            });
+
+            
+            var socket = io.connect();
+            socket.on('createroom', function (data) {
+                
+                $('<button></button>').attr({
+                    'data-room': data
+                }).text('Room Number: ' + data).appendTo('#container');
+            });
+
+            
+            $(document).on('#container > button', 'click', function () {
+                
+                var room = $(this).attr('data-room');
+
+                
+                location = '/canvas/' + room;
+            });
+
+            $('body > button').click(function () {
+                
+                var room = $('#room').val();
+
+                
+                socket.emit('createroom', room);
+
+                
+                location = '/canvas/' + room;
+            });
+        });
+    </script>
+</head>
+<body>
+    <h1>Webserver Project </h1>
+    <p>201820982 김동욱 실시간 그림판</p>
+    <span>방제: </span>
+    <input id="room" />
+    <button>만들기!</button>
+    <hr />
+    <div id="container">
+
+    </div>
+</body>
+</html>
